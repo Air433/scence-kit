@@ -256,3 +256,39 @@ materials → camera → terrain → arena → arch → trees → foliage → pr
 - 任何导出改动后，检查 GLB 的 `images` 数量与 MASK 材质数量。
 - 不要把场景专属逻辑写进 `arena_kit/`；把它放进 `scenes/<name>/`。
 - 交付物路径固定为 `output/<scene>/`，渲染在 `renders/<scene>/`。
+
+---
+
+## 11. 新建场景时可以直接对 LLM 说的话
+
+项目记忆会自动加载，架构、常用命令和技术坑都不需要重复交代。最短只要一句：
+
+> 在 `D:\game\scence\linzhongjijichang` 新建场景 `<scene_name>`：`<一句话描述风格>`。先读 `GUIDE.md`，从 `scenes/_template` 复制，再构建、渲染、导出并给出 Godot 参数。
+
+想要更可控就用下面的模板，按需填写：
+
+```text
+在 D:\game\scence\linzhongjijichang 新建一个竞技场场景：<scene_name>
+
+风格：<例：火山熔岩竞技场，黑曜石看台、暗红天光、空气里有火星>
+规模：<例：比精灵竞技场小一圈 / 保持默认>
+时间与光：<例：黄昏逆光 / 夜晚冷月光 / 清晨薄雾>
+配色：<主色 + 点缀色，例：玄武岩黑 + 熔岩橙>
+相机：<例：更低的平视视角，35 mm / 保持默认>
+特殊元素：<例：不要符文圆环，中央改成火盆；保留灯笼>
+
+请按这个顺序做：
+1. 读 GUIDE.md，复制 scenes/_template 到 scenes/<scene_name>
+2. 只改 scene.py（name/seed/glb_name/palette/world/lighting），不动 arena_kit
+3. --phase all --render quick 先确认构图和尺度
+4. --resume --phase lighting --render mid 迭代光照，再出 hero
+5. --phase export，检查贴图数 / MASK 数 / 灯数
+6. 按新配色更新 Godot 的 WorldEnvironment（天空、雾密度、环境光）
+```
+
+补充几个说法上的技巧：
+
+- **说风格，不说参数**：“黄昏逆光、地面有薄雾” 比 “sun_energy 调低” 更容易得到协调的结果；LLM 会翻译成参数。
+- **给参照物**：“比精灵竞技场小一圈”“树更稀疏”“看台 5 级” 都可以直接落到 `world` / `trees` / `counts`。
+- **明确要不要动引擎**：默认约定是只改 `scene.py`；确实需要新几何或新材质时，直接说“允许新增 arena_kit 模块 / 场景级 materials.py”。
+- **交付标准**：说清要不要 GLB、hero 渲染、Godot 参数三件套，避免只出一张预览图就结束。
