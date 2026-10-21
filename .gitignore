@@ -1,0 +1,17 @@
+# Generated per-scene build artifacts (regenerate with build.py)
+/output/*
+!/output/elven_arena/
+/output/elven_arena/*
+!/output/elven_arena/README_Godot.md
+/checkpoints/
+/textures/
+/renders/
+
+# Blender / Python
+*.blend1
+*.log
+__pycache__/
+*.pyc
+
+# Harness-local settings
+.claude/
