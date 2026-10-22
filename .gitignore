@@ -12,6 +12,9 @@
 !/renders/island_arena/
 /renders/island_arena/*
 !/renders/island_arena/hero.png
+!/renders/island_arena/godot_sunny.png
+!/renders/island_arena/godot_storm.png
+!/renders/island_arena/godot_night.png
 !/renders/elven_arena/
 /renders/elven_arena/*
 !/renders/elven_arena/hero.png

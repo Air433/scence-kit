@@ -18,6 +18,15 @@ Blender 5.2 → GLB → Godot 的竞技场场景工具。共用引擎在 `arena_
 
 实时工程操作：拖动旋转、滚轮缩放，`1` / `2` / `3` 切换晴天 / 暴雨 / 夜晚，`R` 随机天气，`C` 自动环绕。
 
+### 实时天气与时间
+
+三套天气共用同一套光照、雾、海面和风力参数，切换时约 4 秒平滑过渡。以下截图来自 Godot 实机（1600×900）：
+
+| 晴天 | 暴雨 | 夜晚 |
+|:--:|:--:|:--:|
+| [![晴天](renders/island_arena/godot_sunny.png)](renders/island_arena/godot_sunny.png) | [![暴雨](renders/island_arena/godot_storm.png)](renders/island_arena/godot_storm.png) | [![夜晚](renders/island_arena/godot_night.png)](renders/island_arena/godot_night.png) |
+| 暖色天光、平静海面与浅滩 | 雨幕、涌浪与压暗的天光，闪电随机触发 | 月光、星空、火把串灯与旋转的灯塔光束 |
+
 ## 精灵森林竞技场 · 静态
 
 隐藏在巨型古树之间的圆形石质竞技场：三层看台围合中央广场，外圈是一组残破的石柱廊，地面刻着发光的符文圆环，正对祭坛石碑；藤蔓、垂灯与萤火虫散布在林间，低角度暖阳穿过树干，在薄雾中拉出长影。场景由 Blender 完整生成并导出 GLB，符文、灯笼、蘑菇和萤火虫的自发光与点光一并保留。
