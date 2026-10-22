@@ -8,7 +8,10 @@
 !/output/island_arena/README_Godot.md
 /checkpoints/
 /textures/
-/renders/
+/renders/*
+!/renders/island_arena/
+/renders/island_arena/*
+!/renders/island_arena/hero.png
 
 # Godot import cache (regenerated on first open)
 /godot/*/.godot/
