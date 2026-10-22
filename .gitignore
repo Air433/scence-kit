@@ -12,6 +12,9 @@
 !/renders/island_arena/
 /renders/island_arena/*
 !/renders/island_arena/hero.png
+!/renders/elven_arena/
+/renders/elven_arena/*
+!/renders/elven_arena/hero.png
 
 # Godot import cache (regenerated on first open)
 /godot/*/.godot/
