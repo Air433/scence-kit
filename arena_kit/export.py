@@ -150,7 +150,7 @@ def validate_glb(path):
 
 
 def save_blend(path=None):
-    path = path or (config.CHECKPOINT_DIR / "forest_arena_elven.blend")
+    path = path or (config.CHECKPOINT_DIR / config.GLB_NAME.replace(".glb", ".blend"))
     bpy.ops.wm.save_as_mainfile(filepath=str(path), compress=True)
     print(f"[blend] saved {path}")
     return path

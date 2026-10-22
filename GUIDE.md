@@ -50,10 +50,16 @@ arena_kit/                可复用引擎
 scenes/
   _template/scene.py      新场景模板（带逐项注释）
   elven_arena/scene.py    第一个场景（精灵森林竞技场）
+  island_arena/           热带海岛竞技场（自带 builder.py，见下）
   <name>/materials.py     可选：该场景自己的材质库
   <name>/textures.py      可选：该场景自己的贴图生成器
+  <name>/builder.py       可选：该场景自己的阶段编排（岛屿形状与精灵场景不同）
+godot/
+  island_arena/           海岛的实时运行时（Godot 4.7），详见其中 README.md
 output/  renders/  textures/  checkpoints/   均按场景名分目录
 ```
+
+`builder.py` 只有在该场景的舞台形状无法用 `arena_kit` 的参数表达时才需要。它实现与 `build.py` 相同的 `build(phases, ...)` 契约，并可选提供 `set_mist_enabled()`；`build.py` 会自动发现它。海岛的岛形、灯塔岬角、沙滩岸线都在 `scenes/island_arena/` 内，`arena_kit` 只保留通用工具和导出器。
 
 生成器**只在调用时**读取 `config.*`，所以 `scene.load()` 直接改写 config 就能换场景，不需要给每个函数传参。
 
@@ -107,6 +113,8 @@ blender -b -P build.py -- --scene my_arena --phase lighting --resume --render mi
 ## 4. 场景参数速查
 
 完整字段与默认值见 `scenes/_template/scene.py`。所有未知字段会被 `arena_kit/scene.py` **直接报错**并列出合法 key，避免拼写错误静默失效。
+
+> `island_arena` 的岛形、岸线、灯塔与棕榈由 `scenes/island_arena/builder.py` 编排，参数结构与本节的圆环竞技场不同；以 `scenes/island_arena/scene.py` 与 GUIDE 第 9 节为准。下面的通用字段适用于 `elven_arena` 与从 `_template` 新建的场景。
 
 ### 4.1 `world`（米）
 
@@ -231,20 +239,42 @@ materials → camera → terrain → arena → arch → trees → foliage → pr
    - `extensionsUsed` 只包含 `KHR_materials_emissive_strength` 与 `KHR_lights_punctual`
    - 三角面在预算内（参考：31.6 万）
 2. **渲染**：`preview_mid.png` 检查构图、雾、明暗与细节；`hero.png` 检查最终质感。
-3. **Godot**：新建临时工程导入 GLB，确认材质、自发光、灯光、相机都在；参考 `output/elven_arena/README_Godot.md`。
+3. **Godot**：新建临时工程导入 GLB，确认材质、自发光、灯光、相机都在；每个场景的导入参数见 `output/<scene>/README_Godot.md`。
 4. **尺度**：竞技场中心在原点，地面约 y = 0；1.7 m 参考人形应到成年人高度。
 
 ---
 
 ## 9. Godot 交付
 
-详见 `output/elven_arena/README_Godot.md`，其中包含：
+两个场景的导入说明：
 
-- 实测导入数据与灯光强度表
-- 一套已验证的 `WorldEnvironment`（天空、AgX、Glow、SSAO、线性雾、体积雾）
-- 阴影需要手动开启的说明
+- `output/elven_arena/README_Godot.md` —— 静态竞技场的导入参数、灯光强度表、已验证的 `WorldEnvironment`（`ProceduralSkyMaterial` + AgX + Glow + SSAO + 线性雾 + 体积雾）。
+- `output/island_arena/README_Godot.md` —— 海岛 GLB 的实测数据与导入设置；动态海面、天空、天气与平面反射由 `godot/island_arena` 实时工程提供。
 
-换场景后：**天空色、雾密度、环境光强度**要按新配色重调；其余导入步骤不变。
+### 海岛实时工程
+
+`godot/island_arena` 是完整的 Godot 4.7 工程，可直接运行：
+
+```bash
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/island_arena
+```
+
+- 操作：拖动旋转、滚轮缩放、`1/2/3` 切换晴/暴雨/夜、`R` 随机天气、`C` 自动环绕、`H` 隐藏提示；空闲 5 秒后自动环绕。
+- 动态内容：波形海面、960×540 平面反射、岸边泡沫、程序化天空/云/月亮/星空、风力棕榈与草、雨与闪电、火把闪烁、旋转灯塔光束。
+- 天气由 `scripts/weather.gd` 的参数表驱动，切换时约 4 秒平滑插值。
+- 场景数据集中在 `scripts/scene_profile.gd`：GLB 路径、GLB 节点名、材质键、天气时长、相机预设、灯光范围、灯塔光束、岸线谐波、HUD 文案。复用工程做新场景时只改这里（加 `weather.gd` 的配色），运行时逻辑不动。
+
+> **换 GLB 后必须重新导入**：只替换 `godot/island_arena/assets/island_arena.glb` 而不跑导入，Godot 会继续使用 `.godot/imported` 里的旧缓存。
+
+```bash
+cp output/island_arena/island_arena.glb godot/island_arena/assets/island_arena.glb
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64_console.exe" \
+  --headless --path godot/island_arena --import
+```
+
+工程使用 `gltf/embedded_image_handling=3`（贴图内嵌进导入场景），因此不会在 `assets/` 下生成 sidecar PNG。`.godot/` 缓存已加入 `.gitignore`。
+
+换场景后：**天空色、雾密度、环境光强度**要按新配色重调；静态场景的其余导入步骤不变。
 
 ---
 

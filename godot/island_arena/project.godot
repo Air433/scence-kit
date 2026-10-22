@@ -1,0 +1,33 @@
+; Engine configuration for the real-time tropical island arena.
+config_version=5
+
+[application]
+
+config/name="热带海岛竞技场 / Tropical Island Arena"
+config/description="Real-time tropical island arena: Gerstner ocean, planar reflections, dynamic sky, wind-swept palms and three weather moods."
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0.02, 0.04, 0.06, 1)
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/size/window_width_override=1600
+window/size/window_height_override=900
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/vsync/vsync_mode=1
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+renderer/rendering_method.mobile="forward_plus"
+textures/default_filters/anisotropic_filtering_level=4
+anti_aliasing/quality/msaa_3d=1
+anti_aliasing/quality/screen_space_aa=0
+lights_and_shadows/directional_shadow/size=4096
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
+lights_and_shadows/positional_shadow/atlas_size=2048
+environment/defaults/default_clear_color=Color(0.02, 0.04, 0.06, 1)

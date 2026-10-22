@@ -1,7 +1,7 @@
-"""Build the elven forest arena and export a Godot-ready GLB.
+"""Build an arena scene from ``scenes/<name>/scene.py`` and export a Godot-ready GLB.
 
 Headless usage:
-  blender -b --factory-startup -P build.py -- --phase all --render quick
+  blender -b --factory-startup -P build.py -- --scene <name> --phase all --render quick
 """
 from __future__ import annotations
 
@@ -72,6 +72,18 @@ def materials_getter(scene_name):
     return kit_materials.get_materials
 
 
+def scene_builder(scene_name):
+    """Scenes may ship ``builder.py`` when the kit's arena shape is wrong.
+
+    The module exposes ``build(phases, ...)`` with the same contract as the
+    kit build below, plus an optional ``set_mist_enabled(bool)`` hook.
+    """
+    mod = scene.optional_module(scene_name, "builder")
+    if mod is not None and hasattr(mod, "build"):
+        return mod
+    return None
+
+
 def load_checkpoint():
     path = checkpoint_path()
     if not path.exists():
@@ -136,7 +148,11 @@ def setup_render(res, samples, mist):
     scene.render.image_settings.color_depth = "8"
     scene.render.film_transparent = False
 
-    lighting.set_mist_enabled(mist)
+    builder = scene_builder(config.SCENE_NAME)
+    if builder is not None and hasattr(builder, "set_mist_enabled"):
+        builder.set_mist_enabled(mist)
+    else:
+        lighting.set_mist_enabled(mist)
 
 
 def render_to(path, res, samples, mist):
@@ -153,7 +169,11 @@ def render_to(path, res, samples, mist):
 # ---------------------------------------------------------------------------
 
 def build(phases, reset, force_textures=False, materials_fn=None,
-          get_materials_fn=None):
+          get_materials_fn=None, builder=None):
+    if builder is not None:
+        return builder.build(
+            phases, reset=reset, force_textures=force_textures,
+            materials_fn=materials_fn, get_materials_fn=get_materials_fn)
     materials_fn = materials_fn or kit_materials.build_materials
     get_materials_fn = get_materials_fn or kit_materials.get_materials
     if reset:
@@ -203,6 +223,9 @@ def main():
 
     mats_build = materials_builder(args.scene)
     mats_get = materials_getter(args.scene)
+    builder = scene_builder(args.scene)
+    if builder is not None:
+        print(f"[scene] using scenes/{args.scene}/builder.py", flush=True)
 
     if args.phase in ("export", "render"):
         load_checkpoint()
@@ -211,7 +234,8 @@ def main():
         phases = BUILD_ORDER if args.phase == "all" else [args.phase]
         print(f"[build] resume seed={config.SEED} phases={phases}", flush=True)
         build(phases, reset=False, force_textures=args.force_textures,
-              materials_fn=mats_build, get_materials_fn=mats_get)
+              materials_fn=mats_build, get_materials_fn=mats_get,
+              builder=builder)
     else:
         if args.phase == "all":
             phases = BUILD_ORDER
@@ -219,7 +243,8 @@ def main():
             phases = BUILD_ORDER[:BUILD_ORDER.index(args.phase) + 1]
         print(f"[build] seed={config.SEED} phases={phases}", flush=True)
         build(phases, reset=True, force_textures=args.force_textures,
-              materials_fn=mats_build, get_materials_fn=mats_get)
+              materials_fn=mats_build, get_materials_fn=mats_get,
+              builder=builder)
 
     if args.phase != "render":
         full = args.phase == "all"

@@ -3,9 +3,15 @@
 !/output/elven_arena/
 /output/elven_arena/*
 !/output/elven_arena/README_Godot.md
+!/output/island_arena/
+/output/island_arena/*
+!/output/island_arena/README_Godot.md
 /checkpoints/
 /textures/
 /renders/
+
+# Godot import cache (regenerated on first open)
+/godot/*/.godot/
 
 # Blender / Python
 *.blend1

@@ -134,6 +134,9 @@ def gray_rgb(gray):
 # ---------------------------------------------------------------------------
 
 def save_image(name: str, rgb, alpha=None, colorspace: str = "SRGB"):
+    # Blender 5.2 renamed the enum to "sRGB" (older versions accepted SRGB).
+    if colorspace.upper() == "SRGB":
+        colorspace = "sRGB"
     if rgb.ndim == 2:
         rgb = gray_rgb(rgb)
     h, w, _ = rgb.shape

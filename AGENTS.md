@@ -7,8 +7,9 @@
 
 - 一个场景 = `scenes/<name>/scene.py` 的一份参数表；共用引擎在 `arena_kit/`。
 - 新场景：复制 `scenes/_template/` 到 `scenes/<name>/`，改 `name` / `seed` / `glb_name` / `palette` 等。
-- 能在参数表里表达的，**不要改 `arena_kit/`**；场景专属逻辑放 `scenes/<name>/`（可选 `materials.py`、`textures.py` 钩子）。
-- 生成物按场景分目录：`output/<name>/`、`renders/<name>/`、`textures/<name>/`、`checkpoints/<name>/`。这些目录不入库。
+- 能在参数表里表达的，**不要改 `arena_kit/`**；场景专属逻辑放 `scenes/<name>/`（可选 `materials.py`、`textures.py`、`builder.py` 钩子）。
+- 需要实时海面/天气/动态天空时，Godot 工程放 `godot/<name>/`，GLB 以副本形式放进其 `assets/`。
+- 生成物按场景分目录：`output/<name>/`、`renders/<name>/`、`textures/<name>/`、`checkpoints/<name>/`。这些目录不入库；`output/<name>/README_Godot.md` 例外。
 
 ## 常用命令
 
@@ -22,6 +23,16 @@ blender -b -P build.py -- --scene <name> --phase export              # 导出并
 ```
 
 阶段顺序：`materials → camera → terrain → arena → arch → trees → foliage → props → lighting`。
+
+Godot 路径：`D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64_console.exe`
+
+```bash
+godot --path godot/island_arena                              # 运行海岛实时工程
+godot --headless --path godot/island_arena --import          # 换 GLB 后必须重新导入
+godot --path godot/island_arena -- --mood=night --cam=hero --frames=160 --shot=<png>
+```
+
+海岛的实时层（波形海面、平面反射、程序化天空、雨/闪电、风力植被、三套天气）在 `godot/island_arena/`，细节见其中 `README.md`。只替换 `assets/island_arena.glb` 而不重新导入，会继续使用旧缓存。
 
 ## 硬约束（都是踩坑换来的，不要"简化"）
 
@@ -38,8 +49,9 @@ blender -b -P build.py -- --scene <name> --phase export              # 导出并
 
 - GLB 在 `output/<scene>/`，贴图内嵌，单文件自包含。
 - 预览在 `renders/<scene>/`：`preview_main.png`（快速）、`preview_mid.png`（迭代）、`hero.png`（主视觉）。
-- 导出校验：`images` 数量正确、MASK 材质 4 个、无 "image has no size" 警告、灯光/相机齐全。
+- 导出校验：`images` 数量正确、MASK 材质数量与场景设计一致（精灵 4 / 海岛 3）、无 "image has no size" 警告、灯光/相机齐全。
 - Godot 导入参数见 `output/<scene>/README_Godot.md`；换场景后天空色、雾密度、环境光要重调。
+- 实时场景额外提供 `godot/<scene>/README.md`，写清运行方式、操作、截图参数与换 GLB 后的重导入命令。
 
 ## 给 AI 会话的开场白
 
