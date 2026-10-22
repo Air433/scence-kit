@@ -261,9 +261,9 @@ materials → camera → terrain → arena → arch → trees → foliage → pr
 
 ## 11. 新建场景时可以直接对 LLM 说的话
 
-项目记忆会自动加载，架构、常用命令和技术坑都不需要重复交代。最短只要一句：
+仓库根目录的 `AGENTS.md` 是给 AI 的入口（Claude Code 会通过 `CLAUDE.md` 自动加载，其他工具让它先读一次即可），架构、常用命令和技术坑都在里面，不需要重复交代。最短只要一句：
 
-> 在 `D:\game\scence\linzhongjijichang` 新建场景 `<scene_name>`：`<一句话描述风格>`。先读 `GUIDE.md`，从 `scenes/_template` 复制，再构建、渲染、导出并给出 Godot 参数。
+> 在 `D:\game\scence\linzhongjijichang` 新建场景 `<scene_name>`：`<一句话描述风格>`。先读 `AGENTS.md` 和 `GUIDE.md`，从 `scenes/_template` 复制，再构建、渲染、导出并给出 Godot 参数。
 
 想要更可控就用下面的模板，按需填写：
 
@@ -278,7 +278,7 @@ materials → camera → terrain → arena → arch → trees → foliage → pr
 特殊元素：<例：不要符文圆环，中央改成火盆；保留灯笼>
 
 请按这个顺序做：
-1. 读 GUIDE.md，复制 scenes/_template 到 scenes/<scene_name>
+1. 读 AGENTS.md 与 GUIDE.md，复制 scenes/_template 到 scenes/<scene_name>
 2. 只改 scene.py（name/seed/glb_name/palette/world/lighting），不动 arena_kit
 3. --phase all --render quick 先确认构图和尺度
 4. --resume --phase lighting --render mid 迭代光照，再出 hero
