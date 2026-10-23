@@ -40,6 +40,19 @@ Blender 5.2 → GLB → Godot 的竞技场场景工具。共用引擎在 `arena_
 | Blender 场景源码 | `scenes/star_arena/` |
 | 生成物与导入说明 | `output/star_arena/README_Godot.md` |
 
+## 天空竞技场 · 静态
+
+悬在云海之上的古代遗迹竞技场：断裂的环形柱廊、半塌的天空之门、中央悬浮的青绿心晶，脚下是破碎的浮空岩体；四周散布 5 座近景浮岛与 6 座远景浮岛。半径 240 m 的天空穹顶预烘焙了暖色地平线、积云、太阳与云海，全部内容一次性导出为 GLB，无运行时依赖。
+
+![天空竞技场主视觉](renders/sky_arena/hero.png)
+
+*Blender Cycles 离线渲染；天空、云海与浮岛都是 GLB 内的几何，Godot 导入后配合环境补光、Glow 与 ReflectionProbe 即可。*
+
+| 部分 | 位置 |
+|---|---|
+| Blender 场景源码 | `scenes/sky_arena/` |
+| 生成物与导入说明 | `output/sky_arena/README_Godot.md` |
+
 ## 精灵森林竞技场 · 静态
 
 隐藏在巨型古树之间的圆形石质竞技场：三层看台围合中央广场，外圈是一组残破的石柱廊，地面刻着发光的符文圆环，正对祭坛石碑；藤蔓、垂灯与萤火虫散布在林间，低角度暖阳穿过树干，在薄雾中拉出长影。场景由 Blender 完整生成并导出 GLB，符文、灯笼、蘑菇和萤火虫的自发光与点光一并保留。
@@ -68,6 +81,9 @@ blender -b -P build.py -- --scene elven_arena --phase all --render mid
 
 # 构建星空竞技场
 blender -b -P build.py -- --scene star_arena --phase all --render mid
+
+# 构建天空竞技场
+blender -b -P build.py -- --scene sky_arena --phase all --render mid
 
 # 运行海岛的 Godot 实时工程
 "D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/island_arena
