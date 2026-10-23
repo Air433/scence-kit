@@ -6,6 +6,9 @@
 !/output/island_arena/
 /output/island_arena/*
 !/output/island_arena/README_Godot.md
+!/output/star_arena/
+/output/star_arena/*
+!/output/star_arena/README_Godot.md
 /checkpoints/
 /textures/
 /renders/*
@@ -18,6 +21,9 @@
 !/renders/elven_arena/
 /renders/elven_arena/*
 !/renders/elven_arena/hero.png
+!/renders/star_arena/
+/renders/star_arena/*
+!/renders/star_arena/hero.png
 
 # Godot import cache (regenerated on first open)
 /godot/*/.godot/
@@ -30,3 +36,4 @@ __pycache__/
 
 # Harness-local settings
 .claude/
+/vibe_images/

@@ -51,6 +51,7 @@ scenes/
   _template/scene.py      新场景模板（带逐项注释）
   elven_arena/scene.py    第一个场景（精灵森林竞技场）
   island_arena/           热带海岛竞技场（自带 builder.py，见下）
+  star_arena/             星空竞技场（自定义 builder.py + 贴图 + 材质）
   <name>/materials.py     可选：该场景自己的材质库
   <name>/textures.py      可选：该场景自己的贴图生成器
   <name>/builder.py       可选：该场景自己的阶段编排（岛屿形状与精灵场景不同）
@@ -246,10 +247,11 @@ materials → camera → terrain → arena → arch → trees → foliage → pr
 
 ## 9. Godot 交付
 
-两个场景的导入说明：
+三个场景的导入说明：
 
 - `output/elven_arena/README_Godot.md` —— 静态竞技场的导入参数、灯光强度表、已验证的 `WorldEnvironment`（`ProceduralSkyMaterial` + AgX + Glow + SSAO + 线性雾 + 体积雾）。
 - `output/island_arena/README_Godot.md` —— 海岛 GLB 的实测数据与导入设置；动态海面、天空、天气与平面反射由 `godot/island_arena` 实时工程提供。
+- `output/star_arena/README_Godot.md` —— 星空竞技场的实测数据；重点在星穹不投影、点光 range 重设、太阳阴影、面光不导出后的环境光/补光，以及 ReflectionProbe。
 
 ### 海岛实时工程
 
