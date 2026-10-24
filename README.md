@@ -1,6 +1,6 @@
 # 程序化竞技场场景生成器
 
-Blender 5.2 → GLB → Godot 的竞技场场景工具。共用引擎在 `arena_kit/`，每个场景是一份 `scenes/<name>/scene.py` 参数表；需要动态环境的场景另配一个 `godot/<name>/` 实时工程。
+Blender 5.2 → GLB → Godot 的竞技场场景工具。共用引擎在 `arena_kit/`，每个场景是一份 `scenes/<name>/scene.py` 参数表；需要动态环境的场景放在共用 Godot 工程 `godot/` 下（`godot/<name>/` 场景目录 + 共享的 `godot/common/`）。
 
 ## 热带海岛竞技场 · 实时
 
@@ -109,11 +109,13 @@ blender -b -P build.py -- --scene sky_arena --phase all --render mid
 # 构建赛璐璐森林竞技场（导出时自动注入 MToon 扩展）
 blender -b -P build.py -- --scene cel_forest_arena --phase all --render mid
 
-# 运行海岛的 Godot 实时工程
-"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/island_arena
+# 运行海岛的 Godot 实时场景（两个场景共用 godot/ 工程）
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" \
+  --path godot res://island_arena/main.tscn
 
-# 运行赛璐璐森林的 Godot 实时工程
-"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/cel_forest_arena
+# 运行赛璐璐森林的 Godot 实时场景
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" \
+  --path godot res://cel_forest_arena/main.tscn
 ```
 
 - 新建场景：复制 `scenes/_template` → 改 `scene.py` → 构建

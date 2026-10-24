@@ -1,9 +1,9 @@
 extends Node3D
 
-const PROFILE := preload("res://scripts/scene_profile.gd")
-const MTOON_SHADER: Shader = preload("res://shaders/mtoon.gdshader")
-const OUTLINE_SHADER: Shader = preload("res://shaders/mtoon_outline.gdshader")
-const SKY_SHADER: Shader = preload("res://shaders/cel_sky.gdshader")
+const PROFILE := preload("res://cel_forest_arena/scripts/scene_profile.gd")
+const MTOON_SHADER: Shader = preload("res://cel_forest_arena/shaders/mtoon.gdshader")
+const OUTLINE_SHADER: Shader = preload("res://cel_forest_arena/shaders/mtoon_outline.gdshader")
+const SKY_SHADER: Shader = preload("res://cel_forest_arena/shaders/cel_sky.gdshader")
 
 @onready var rig: Camera3D = $Camera
 
@@ -23,18 +23,16 @@ var nofog := false
 
 
 func _ready() -> void:
-    for arg in OS.get_cmdline_user_args():
-        if arg.begins_with("--shot="):
-            capture_path = arg.substr(7)
-            capture_mode = true
-        elif arg.begins_with("--frames="):
-            capture_left = int(arg.substr(9))
-        elif arg.begins_with("--cam="):
-            cam_preset = arg.substr(6)
-        elif arg == "--nofog":
-            nofog = true
+    var args := ArenaCapture.parse_args()
+    capture_path = String(args["shot"])
+    capture_mode = capture_path != ""
+    capture_left = int(args["frames"])
+    if String(args["cam"]) != "":
+        cam_preset = String(args["cam"])
+    nofog = bool(args["nofog"])
 
     _build_environment()
+    rig.call("configure", PROFILE.CAMERA)
     _load_arena()
     _apply_cam_preset(cam_preset)
     _build_ui()
@@ -290,55 +288,13 @@ func _setup_lights(root: Node) -> void:
 # ---------------------------------------------------------------------------
 
 func _build_ui() -> void:
-    var font := SystemFont.new()
-    font.font_names = PackedStringArray([
-        "Microsoft YaHei UI", "Microsoft YaHei", "SimHei",
-        "Noto Sans CJK SC", "Source Han Sans SC",
-    ])
-
-    hud = CanvasLayer.new()
-    hud.layer = 20
-    add_child(hud)
-    var root := Control.new()
-    root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    hud.add_child(root)
-
-    var title := _label(PROFILE.HUD["title"], 32, Color(1.0, 0.97, 0.90), font)
-    title.position = Vector2(56, 38)
-    root.add_child(title)
-
-    var subtitle := _label(PROFILE.HUD["subtitle"], 14,
-                          Color(0.80, 0.95, 0.86, 0.85), font)
-    subtitle.position = Vector2(59, 84)
-    root.add_child(subtitle)
-
-    hint_label = _label(PROFILE.HUD["hint"], 15,
-                        Color(1.0, 0.96, 0.88, 0.75), font)
-    hint_label.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-    hint_label.position = Vector2(56, -72)
-    hint_label.size = Vector2(1100, 34)
-    root.add_child(hint_label)
-
-
-func _label(text: String, size: int, color: Color, font: Font) -> Label:
-    var l := Label.new()
-    l.text = text
-    l.add_theme_font_override("font", font)
-    l.add_theme_font_size_override("font_size", size)
-    l.add_theme_color_override("font_color", color)
-    l.add_theme_color_override("font_outline_color", Color(0.03, 0.08, 0.05, 0.7))
-    l.add_theme_constant_override("outline_size", 8)
-    l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    return l
+    var ui := ArenaHud.build(self, PROFILE.HUD)
+    hud = ui["hud"]
+    hint_label = ui["hint"]
 
 
 func _take_shot() -> void:
-    await RenderingServer.frame_post_draw
-    var img := get_viewport().get_texture().get_image()
     var path := capture_path
     if path == "":
-        path = "user://" + PROFILE.HUD["shot_name"]
-    var err := img.save_png(path)
-    print("[shot] ", path, " error=", err, " size=", img.get_size())
-    get_tree().quit()
+        path = "user://" + String(PROFILE.HUD["shot_name"])
+    ArenaCapture.take_shot(self, path)

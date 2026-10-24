@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://twmexphhkl0t"
-path="res://.godot/imported/foam.png-0219578710fd73b5efd085ab9b3a4086.ctex"
+path="res://.godot/imported/foam.png-4c68d5d9d401f972c9267b3120010240.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/foam.png"
-dest_files=["res://.godot/imported/foam.png-0219578710fd73b5efd085ab9b3a4086.ctex"]
+source_file="res://island_arena/assets/foam.png"
+dest_files=["res://.godot/imported/foam.png-4c68d5d9d401f972c9267b3120010240.ctex"]
 
 [params]
 

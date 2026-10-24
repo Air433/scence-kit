@@ -250,28 +250,36 @@ materials → camera → terrain → arena → arch → trees → foliage → pr
 三个场景的导入说明：
 
 - `output/elven_arena/README_Godot.md` —— 静态竞技场的导入参数、灯光强度表、已验证的 `WorldEnvironment`（`ProceduralSkyMaterial` + AgX + Glow + SSAO + 线性雾 + 体积雾）。
-- `output/island_arena/README_Godot.md` —— 海岛 GLB 的实测数据与导入设置；动态海面、天空、天气与平面反射由 `godot/island_arena` 实时工程提供。
+- `output/island_arena/README_Godot.md` —— 海岛 GLB 的实测数据与导入设置；动态海面、天空、天气与平面反射由 `godot/island_arena` 实时场景提供。
 - `output/star_arena/README_Godot.md` —— 星空竞技场的实测数据；重点在星穹不投影、点光 range 重设、太阳阴影、面光不导出后的环境光/补光，以及 ReflectionProbe。
+- `output/cel_forest_arena/README_Godot.md` —— 赛璐璐森林的实测数据、MToon 扩展结构、导入设置与实机着色器参数。
 
-### 海岛实时工程
+### 实时工程（共享 Godot 项目）
 
-`godot/island_arena` 是完整的 Godot 4.7 工程，可直接运行：
+`godot/` 是一个 Godot 4.7 工程，两个场景各占一个目录，共用 `godot/common/` 的相机、HUD、命令行与截图：
 
 ```bash
-"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/island_arena
+# 海岛
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" \
+  --path godot res://island_arena/main.tscn
+
+# 赛璐璐森林
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" \
+  --path godot res://cel_forest_arena/main.tscn
 ```
 
-- 操作：拖动旋转、滚轮缩放、`1/2/3` 切换晴/暴雨/夜、`R` 随机天气、`C` 自动环绕、`H` 隐藏提示；空闲 5 秒后自动环绕。
-- 动态内容：波形海面、960×540 平面反射、岸边泡沫、程序化天空/云/月亮/星空、风力棕榈与草、雨与闪电、火把闪烁、旋转灯塔光束。
-- 天气由 `scripts/weather.gd` 的参数表驱动，切换时约 4 秒平滑插值。
-- 场景数据集中在 `scripts/scene_profile.gd`：GLB 路径、GLB 节点名、材质键、天气时长、相机预设、灯光范围、灯塔光束、岸线谐波、HUD 文案。复用工程做新场景时只改这里（加 `weather.gd` 的配色），运行时逻辑不动。
+- 操作：拖动旋转、滚轮缩放、`C` 自动环绕、`H` 隐藏提示；空闲 5 秒后自动环绕。海岛用 `1/2/3` 切换晴/暴雨/夜、`R` 随机天气；赛璐璐用 `1/2/3/4` 切换四个机位。
+- 共享层：`godot/common/scripts/orbit_camera.gd`（相机，参数由各场景 `CAMERA` 提供）、`hud.gd`、`capture.gd`。
+- 海岛动态内容：波形海面、960×540 平面反射、岸边泡沫、程序化天空/云/月亮/星空、风力棕榈与草、雨与闪电、火把闪烁、旋转灯塔光束。
+- 天气由 `island_arena/scripts/weather.gd` 的参数表驱动，切换时约 4 秒平滑插值。
+- 场景数据集中在各自的 `scene_profile.gd`：GLB 路径、节点名、材质键、天气时长、相机、灯光范围、岸线谐波、HUD 文案。复用场景时只改这里（加 `weather.gd` 的配色），共享逻辑不动。
 
-> **换 GLB 后必须重新导入**：只替换 `godot/island_arena/assets/island_arena.glb` 而不跑导入，Godot 会继续使用 `.godot/imported` 里的旧缓存。
+> **换 GLB 后必须重新导入**：只替换 `godot/<scene>/assets/<scene>.glb` 而不跑导入，Godot 会继续使用 `.godot/imported` 里的旧缓存。
 
 ```bash
 cp output/island_arena/island_arena.glb godot/island_arena/assets/island_arena.glb
 "D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64_console.exe" \
-  --headless --path godot/island_arena --import
+  --headless --path godot --import
 ```
 
 工程使用 `gltf/embedded_image_handling=3`（贴图内嵌进导入场景），因此不会在 `assets/` 下生成 sidecar PNG。`.godot/` 缓存已加入 `.gitignore`。

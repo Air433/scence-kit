@@ -1,8 +1,8 @@
 """热带海岛竞技场 / Tropical island arena.
 
 Static geometry is generated here and exported to ``island_arena.glb``.  The
-real-time layer (Gerstner ocean, sky, weather, wind) lives in the companion
-Godot project at ``godot/island_arena``.
+real-time layer (Gerstner ocean, sky, weather, wind) lives in
+``godot/island_arena`` inside the shared Godot project at ``godot/``.
 
 Island-specific generators are wired through ``builder.py``; ``arena_kit``
 keeps the shared utilities, texture helpers and exporter.

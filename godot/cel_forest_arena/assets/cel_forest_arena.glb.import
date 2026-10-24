@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://b1iri4snt5p4k"
-path="res://.godot/imported/cel_forest_arena.glb-df2be5a7683a75e49b3c3b471ead29a1.scn"
+path="res://.godot/imported/cel_forest_arena.glb-1bd3cc250e550b8bcd54cb4b2c8ef2c0.scn"
 
 [deps]
 
-source_file="res://assets/cel_forest_arena.glb"
-dest_files=["res://.godot/imported/cel_forest_arena.glb-df2be5a7683a75e49b3c3b471ead29a1.scn"]
+source_file="res://cel_forest_arena/assets/cel_forest_arena.glb"
+dest_files=["res://.godot/imported/cel_forest_arena.glb-1bd3cc250e550b8bcd54cb4b2c8ef2c0.scn"]
 
 [params]
 

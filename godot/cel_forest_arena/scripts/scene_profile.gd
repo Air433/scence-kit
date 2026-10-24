@@ -4,12 +4,21 @@ extends RefCounted
 # another cel arena only needs a new GLB, a new MTOON table and new camera
 # presets.
 
-const GLB_PATH := "res://assets/cel_forest_arena.glb"
+const GLB_PATH := "res://cel_forest_arena/assets/cel_forest_arena.glb"
 const DEFAULT_CAM := "hero"
 const DEFAULT_FRAMES := 90
-const FOV := 46.0
-const MIN_DISTANCE := 5.0
-const MAX_DISTANCE := 30.0
+
+const CAMERA := {
+    "fov": 46.0,
+    "near": 0.1,
+    "far": 400.0,
+    "pitch_min": -12.0,
+    "pitch_max": 60.0,
+    "min_distance": 5.0,
+    "max_distance": 30.0,
+    "auto_orbit_delay": 5.0,
+    "auto_orbit_speed": 0.45,
+}
 
 const CAMERA_PRESETS := {
     "hero": {
@@ -155,4 +164,8 @@ const HUD := {
     "subtitle": "CEL FOREST ARENA  ·  MTOON 1.0",
     "hint": "拖动旋转 · 滚轮缩放 ·  1 主视觉   2 祭坛   3 全景   4 俯视   C 自动环绕",
     "shot_name": "cel_forest_shot.png",
+    "title_color": Color(1.0, 0.97, 0.90),
+    "subtitle_color": Color(0.80, 0.95, 0.86, 0.85),
+    "hint_color": Color(1.0, 0.96, 0.88, 0.75),
+    "outline_color": Color(0.03, 0.08, 0.05, 0.7),
 }

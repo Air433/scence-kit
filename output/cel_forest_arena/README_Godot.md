@@ -2,7 +2,7 @@
 
 主文件：`cel_forest_arena.glb`（17.5 MiB / 18.3 MB，贴图内嵌，单文件自包含）
 源文件：`../../checkpoints/cel_forest_arena/cel_forest_arena.blend`（Blender 5.2）
-实时工程：`../../godot/cel_forest_arena`（Godot 4.7.2，Forward+）
+实时场景：`../../godot/cel_forest_arena`（共用 Godot 工程 `../../godot/`，Godot 4.7.2，Forward+）
 预览图：`../../renders/cel_forest_arena/hero.png`（Blender）、`godot_hero.png`（Godot 实机）
 
 重新生成：
@@ -47,7 +47,7 @@ Godot 会忽略该扩展。实时工程在运行时用 `shaders/mtoon.gdshader` 
 1. 使用 Godot 4.7.x，渲染器选 **Forward+**（Vulkan）。
 2. 把 `cel_forest_arena.glb` 复制进工程，等待首次导入（约 10–20 秒）。
 3. 在 Import 面板把 **glTF → Embedded Image Handling** 设为 **Embed as Uncompressed**（`embedded_image_handling=3`）。默认的 *Extract Textures* 会在 GLB 旁生成 11 张 sidecar PNG；两者都能用，内嵌方式更干净。
-4. 实例化 GLB 后，把 `CAM_Hero` 设为 `current`，或按 `godot/cel_forest_arena/scripts/orbit_camera.gd` 的预设重建相机（垂直 FOV 46°，目标 `(0, 2.9, -1.5)`，距离 11.7 m）。
+4. 实例化 GLB 后，把 `CAM_Hero` 设为 `current`，或按 `godot/common/scripts/orbit_camera.gd` 的预设重建相机（垂直 FOV 46°，目标 `(0, 2.9, -1.5)`，距离 11.7 m）。
 5. glTF 不带阴影开关，平行光需手动开阴影；建议 `directional_shadow_max_distance = 70`。
 6. **不要**启用 Draco / meshopt；本 GLB 使用原始网格。
 
@@ -109,7 +109,7 @@ const OUTLINE_SCALE := 2.5                # 全局描边倍率
 ```bash
 cp output/cel_forest_arena/cel_forest_arena.glb godot/cel_forest_arena/assets/cel_forest_arena.glb
 "D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64_console.exe" \
-  --headless --path godot/cel_forest_arena --import
+  --headless --path godot --import
 ```
 
 ---

@@ -1,11 +1,14 @@
-; Engine configuration for the real-time tropical island arena.
+; Shared Godot project for the real-time arenas.
+; Run one scene explicitly:
+;   godot --path godot res://island_arena/main.tscn
+;   godot --path godot res://cel_forest_arena/main.tscn
 config_version=5
 
 [application]
 
-config/name="热带海岛竞技场 / Tropical Island Arena"
-config/description="Real-time tropical island arena: Gerstner ocean, planar reflections, dynamic sky, wind-swept palms and three weather moods."
-run/main_scene="res://main.tscn"
+config/name="竞技场实时场景集 / Arena Runtime"
+config/description="Godot 4 real-time arenas. Each scene lives in its own folder and shares godot/common."
+run/main_scene="res://island_arena/main.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 boot_splash/show_image=false
 boot_splash/bg_color=Color(0.02, 0.04, 0.06, 1)

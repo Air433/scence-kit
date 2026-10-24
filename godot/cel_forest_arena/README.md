@@ -1,20 +1,21 @@
 # 赛璐璐森林竞技场 · Godot 实时工程
 
-`godot/cel_forest_arena` 是 `scenes/cel_forest_arena` 的实时运行时。GLB 提供静态几何与调色板贴图；MToon 材质、墨线描边、程序化天空与灯光由本项目在运行时生成。
+`godot/cel_forest_arena` 是 `scenes/cel_forest_arena` 的实时运行时。GLB 提供静态几何与调色板贴图；MToon 材质、墨线描边、程序化天空与灯光由本项目在运行时生成。它和 `godot/island_arena` 同属 `godot/` 下的一个 Godot 工程，共用 `godot/common/` 里的相机、HUD 与截图逻辑。
 
 - 引擎：**Godot 4.7.2**，Forward+，Vulkan
 - 分辨率：1600 × 900，MSAA 2×
-- 场景：`main.tscn`，入口脚本 `scripts/main.gd`
-- 资产：`assets/cel_forest_arena.glb`（与 `output/cel_forest_arena/cel_forest_arena.glb` 完全一致，含 `VRMC_materials_mtoon` 扩展）
+- 场景：`cel_forest_arena/main.tscn`，入口脚本 `cel_forest_arena/scripts/main.gd`
+- 资产：`cel_forest_arena/assets/cel_forest_arena.glb`（与 `output/cel_forest_arena/cel_forest_arena.glb` 完全一致，含 `VRMC_materials_mtoon` 扩展）
 
 ## 运行
 
 ```bash
-# 编辑器
-"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/cel_forest_arena
+# 编辑器（打开合并工程，再选 cel_forest_arena/main.tscn）
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --editor --path godot
 
 # 直接运行
-"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/cel_forest_arena
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" \
+  --path godot res://cel_forest_arena/main.tscn
 ```
 
 ## 操作
@@ -31,7 +32,7 @@
 ## 命令行参数（截图 / 自动化）
 
 ```bash
-Godot_v4.7.2-stable_win64_console.exe --path godot/cel_forest_arena -- \
+Godot_v4.7.2-stable_win64_console.exe --path godot res://cel_forest_arena/main.tscn -- \
   --cam=hero --frames=110 \
   --shot=D:/game/scence/linzhongjijichang/renders/cel_forest_arena/godot_hero.png
 ```
@@ -47,29 +48,32 @@ Godot_v4.7.2-stable_win64_console.exe --path godot/cel_forest_arena -- \
 
 ## 换 GLB 后必须重新导入
 
-Godot 使用 `.godot/imported/*.scn` 缓存。只替换 `assets/cel_forest_arena.glb` 而不重新导入，运行时会继续使用旧场景。
+Godot 使用 `.godot/imported/*.scn` 缓存。只替换 `cel_forest_arena/assets/cel_forest_arena.glb` 而不重新导入，运行时会继续使用旧场景。
 
 ```bash
 cp output/cel_forest_arena/cel_forest_arena.glb godot/cel_forest_arena/assets/cel_forest_arena.glb
 "D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64_console.exe" \
-  --headless --path godot/cel_forest_arena --import
+  --headless --path godot --import
 ```
 
-`assets/cel_forest_arena.glb.import` 已设 `gltf/embedded_image_handling=3`（贴图内嵌进导入场景），因此 `assets/` 下只保留 GLB 本身，不会生成 11 张 sidecar PNG。
+`cel_forest_arena/assets/cel_forest_arena.glb.import` 已设 `gltf/embedded_image_handling=3`（贴图内嵌进导入场景），因此 `assets/` 下只保留 GLB 本身，不会生成 11 张 sidecar PNG。
 
 ## 结构
 
 ```
-main.tscn                     Node3D + Camera3D（挂 orbit_camera.gd）
-scripts/scene_profile.gd      场景配置：GLB 路径、相机预设、MTOON 材质表、天空、环境、灯光、描边
-scripts/main.gd               环境、GLB 加载、材质覆盖、描边 next_pass、灯光、UI、截图
-scripts/orbit_camera.gd       平滑环绕相机，垂直 FOV 46°
-shaders/mtoon.gdshader        MToon 近似：二段式明暗 + 边缘光 + 自发光
-shaders/mtoon_outline.gdshader 反壳描边（cull_front，顶点沿法线外扩）
-shaders/cel_sky.gdshader      三段渐变、暖地平线、8 级量化条带、太阳辉光
+godot/project.godot                    共用工程：Forward+、1600×900、MSAA 2×、4096 阴影
+godot/common/scripts/orbit_camera.gd   两场景共用的平滑环绕相机
+godot/common/scripts/hud.gd            共用 HUD：标题、副标题、底部提示
+godot/common/scripts/capture.gd        共用命令行解析与截图
+godot/cel_forest_arena/main.tscn       Node3D + Camera3D
+godot/cel_forest_arena/scripts/scene_profile.gd  场景配置：GLB、相机、MTOON 表、天空、环境、灯光
+godot/cel_forest_arena/scripts/main.gd 环境、GLB 加载、材质覆盖、描边 next_pass、灯光、UI
+godot/cel_forest_arena/shaders/mtoon.gdshader         MToon 近似：二段式明暗 + 边缘光 + 自发光
+godot/cel_forest_arena/shaders/mtoon_outline.gdshader 反壳描边（cull_front，顶点沿法线外扩）
+godot/cel_forest_arena/shaders/cel_sky.gdshader       三段渐变、暖地平线、8 级量化条带、太阳辉光
 ```
 
-`scene_profile.gd` 只放场景数据、不放逻辑。复制整个工程做新竞技场时，替换 `assets/` 下的 GLB，改这个文件里的 `GLB_PATH` / `CAMERA_PRESETS` / `MTOON` / `SKY` / `ENV` / `SUN` / `HUD` 即可；运行时逻辑与三个着色器都不需要动。
+`scene_profile.gd` 只放场景数据、不放逻辑。新增赛璐璐场景时复制 `godot/cel_forest_arena/` 成 `godot/<name>/`，替换 `assets/` 下的 GLB，改这个文件里的 `GLB_PATH` / `CAMERA` / `CAMERA_PRESETS` / `MTOON` / `SKY` / `ENV` / `SUN` / `HUD` 即可；共享逻辑在 `godot/common/`，着色器与主脚本都不需要复制。
 
 ### 运行时构建内容
 
@@ -93,4 +97,4 @@ shaders/cel_sky.gdshader      三段渐变、暖地平线、8 级量化条带、
 - MToon 是运行时近似，不读取 GLB 里的 `VRMC_materials_mtoon` 扩展；改扩展参数不会自动影响 Godot，需要同步 `scene_profile.gd`。
 - 反壳描边依赖模型法线连续；共面石板、薄叶片会跳过或出现断线。
 - 天空条带按屏幕空间高度量化，相机俯仰很大时条带位置会跟着移动。
-- 场景不含水面、天气切换与风；这些在海岛工程 `godot/island_arena` 里。
+- 场景不含水面、天气切换与风；这些在海岛场景 `godot/island_arena` 里。

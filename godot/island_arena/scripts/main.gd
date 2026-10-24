@@ -1,11 +1,11 @@
 extends Node3D
 
-const PROFILE := preload("res://scripts/scene_profile.gd")
-const SKY_SHADER: Shader = preload("res://shaders/sky.gdshader")
-const OCEAN_SHADER: Shader = preload("res://shaders/ocean.gdshader")
-const WIND_SHADER: Shader = preload("res://shaders/wind.gdshader")
-const TERRAIN_SHADER: Shader = preload("res://shaders/terrain.gdshader")
-const VIGNETTE_SHADER: Shader = preload("res://shaders/vignette.gdshader")
+const PROFILE := preload("res://island_arena/scripts/scene_profile.gd")
+const SKY_SHADER: Shader = preload("res://island_arena/shaders/sky.gdshader")
+const OCEAN_SHADER: Shader = preload("res://island_arena/shaders/ocean.gdshader")
+const WIND_SHADER: Shader = preload("res://island_arena/shaders/wind.gdshader")
+const TERRAIN_SHADER: Shader = preload("res://island_arena/shaders/terrain.gdshader")
+const VIGNETTE_SHADER: Shader = preload("res://island_arena/shaders/vignette.gdshader")
 
 const ALL_LAYERS := 0xFFFFF
 const LAYER_SEABED := 1 << 1
@@ -57,28 +57,24 @@ var auto_weather := true
 var capture_mode := false
 var capture_path := ""
 var capture_left := -1
-var font: SystemFont
 var cam_preset: String = PROFILE.DEFAULT_CAM
 var nofog := false
 
 
 func _ready() -> void:
     moods = PROFILE.WEATHER.presets()
+    var args := ArenaCapture.parse_args()
     var want: String = PROFILE.DEFAULT_MOOD
-    for arg in OS.get_cmdline_user_args():
-        if arg.begins_with("--mood="):
-            want = arg.substr(7)
-        elif arg.begins_with("--shot="):
-            capture_path = arg.substr(7)
-            capture_mode = true
-        elif arg.begins_with("--frames="):
-            capture_left = int(arg.substr(9))
-        elif arg == "--random":
-            want = String(moods.keys().pick_random())
-        elif arg.begins_with("--cam="):
-            cam_preset = arg.substr(6)
-        elif arg == "--nofog":
-            nofog = true
+    if String(args["mood"]) != "":
+        want = String(args["mood"])
+    if bool(args["random"]):
+        want = String(moods.keys().pick_random())
+    if String(args["cam"]) != "":
+        cam_preset = String(args["cam"])
+    capture_path = String(args["shot"])
+    capture_mode = capture_path != ""
+    capture_left = int(args["frames"])
+    nofog = bool(args["nofog"])
 
     if not moods.has(want):
         want = PROFILE.DEFAULT_MOOD
@@ -88,7 +84,7 @@ func _ready() -> void:
     state = from_state.duplicate(true)
 
     _build_environment()
-    rig.far = 30000.0
+    rig.call("configure", PROFILE.CAMERA)
     _load_island()
     _build_ocean()
     _build_weather_fx()
@@ -102,7 +98,7 @@ func _ready() -> void:
         hud.visible = false
         DisplayServer.window_set_size(Vector2i(1600, 900))
         if capture_left < 0:
-            capture_left = 100
+            capture_left = PROFILE.DEFAULT_FRAMES
     _apply_state(state)
 
 
@@ -624,8 +620,8 @@ func _make_override(key: String, mat: Material) -> Material:
 func _build_ocean() -> void:
     ocean_mat = ShaderMaterial.new()
     ocean_mat.shader = OCEAN_SHADER
-    ocean_mat.set_shader_parameter("water_normal", load("res://assets/water_normal.png"))
-    ocean_mat.set_shader_parameter("foam_tex", load("res://assets/foam.png"))
+    ocean_mat.set_shader_parameter("water_normal", load("res://island_arena/assets/water_normal.png"))
+    ocean_mat.set_shader_parameter("foam_tex", load("res://island_arena/assets/foam.png"))
     var shore: Dictionary = PROFILE.SHORE
     ocean_mat.set_shader_parameter("shore_base", shore["base"])
     ocean_mat.set_shader_parameter("shore_wave_1", shore["wave_1"])
@@ -801,65 +797,22 @@ func _build_weather_fx() -> void:
 
 
 func _build_ui() -> void:
-    font = SystemFont.new()
-    font.font_names = PackedStringArray([
-        "Microsoft YaHei UI", "Microsoft YaHei", "SimHei",
-        "Noto Sans CJK SC", "Source Han Sans SC",
-    ])
+    var ui := ArenaHud.build(self, PROFILE.HUD)
+    hud = ui["hud"]
+    hint_label = ui["hint"]
+    var root: Control = ui["root"]
 
-    hud = CanvasLayer.new()
-    hud.layer = 20
-    add_child(hud)
-    var root := Control.new()
-    root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    hud.add_child(root)
-
-    var title := _label(PROFILE.HUD["title"], 32, Color(1.0, 0.96, 0.90))
-    title.position = Vector2(56, 38)
-    root.add_child(title)
-
-    var subtitle := _label(PROFILE.HUD["subtitle"], 14, Color(1.0, 0.88, 0.72, 0.85))
-    subtitle.position = Vector2(59, 84)
-    root.add_child(subtitle)
-
-    weather_label = _label(PROFILE.HUD["weather_placeholder"], 20, Color(1.0, 0.94, 0.86, 0.95))
+    weather_label = ArenaHud.label(PROFILE.HUD["weather_placeholder"], 20,
+            Color(1.0, 0.94, 0.86, 0.95), ui["font"], ui["outline"])
     weather_label.set_anchors_preset(Control.PRESET_TOP_RIGHT)
     weather_label.position = Vector2(-420, 44)
     weather_label.size = Vector2(364, 40)
     weather_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     root.add_child(weather_label)
 
-    hint_label = _label(PROFILE.HUD["hint"], 15, Color(1.0, 0.95, 0.88, 0.72))
-    hint_label.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-    hint_label.position = Vector2(56, -72)
-    hint_label.size = Vector2(1100, 34)
-    root.add_child(hint_label)
-
-
-func _label(text: String, size: int, color: Color) -> Label:
-    var l := Label.new()
-    l.text = text
-    l.add_theme_font_override("font", font)
-    l.add_theme_font_size_override("font_size", size)
-    l.add_theme_color_override("font_color", color)
-    l.add_theme_color_override("font_outline_color", Color(0.03, 0.03, 0.04, 0.7))
-    l.add_theme_constant_override("outline_size", 8)
-    l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    return l
-
 
 func _take_shot() -> void:
-    await RenderingServer.frame_post_draw
-    var img := get_viewport().get_texture().get_image()
     var path := capture_path
     if path == "":
-        path = "user://" + PROFILE.HUD["shot_name"]
-    var err := img.save_png(path)
-    print("[shot] ", path, " error=", err, " size=", img.get_size())
-    if refl_vp != null:
-        var refl_img := refl_vp.get_texture().get_image()
-        var refl_path := path.get_basename() + "_refl.png"
-        refl_img.save_png(refl_path)
-        print("[shot] reflection ", refl_path, " size=", refl_img.get_size())
-    get_tree().quit()
+        path = "user://" + String(PROFILE.HUD["shot_name"])
+    ArenaCapture.take_shot(self, path, refl_vp)

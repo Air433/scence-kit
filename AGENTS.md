@@ -27,12 +27,13 @@ blender -b -P build.py -- --scene <name> --phase export              # 导出并
 Godot 路径：`D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64_console.exe`
 
 ```bash
-godot --path godot/island_arena                              # 运行海岛实时工程
-godot --headless --path godot/island_arena --import          # 换 GLB 后必须重新导入
-godot --path godot/island_arena -- --mood=night --cam=hero --frames=160 --shot=<png>
+godot --path godot res://island_arena/main.tscn               # 运行海岛实时场景
+godot --path godot res://cel_forest_arena/main.tscn           # 运行赛璐璐森林实时场景
+godot --headless --path godot --import                        # 换 GLB 后必须重新导入
+godot --path godot res://island_arena/main.tscn -- --mood=night --cam=hero --frames=160 --shot=<png>
 ```
 
-海岛的实时层（波形海面、平面反射、程序化天空、雨/闪电、风力植被、三套天气）在 `godot/island_arena/`，细节见其中 `README.md`。只替换 `assets/island_arena.glb` 而不重新导入，会继续使用旧缓存。
+两个实时场景共用 `godot/` 一个 Godot 工程：`godot/common/` 放相机、HUD、命令行与截图，`godot/<scene>/` 只放 `main.tscn`、`scene_profile.gd`、场景专属脚本/着色器与 GLB。海岛的实时层（波形海面、平面反射、程序化天空、雨/闪电、风力植被、三套天气）在 `godot/island_arena/`，赛璐璐层（MToon、墨线、分色天空）在 `godot/cel_forest_arena/`，细节见各自 `README.md`。只替换 `assets/<scene>.glb` 而不重新导入，会继续使用旧缓存。
 
 ## 硬约束（都是踩坑换来的，不要"简化"）
 

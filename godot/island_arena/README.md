@@ -1,20 +1,21 @@
 # 热带海岛竞技场 · Godot 实时工程
 
-`godot/island_arena` 是 `scenes/island_arena` 的实时运行时：静态岛屿来自 GLB，海面、天空、反射、天气、风力植被和灯光全部由本项目在运行时生成。
+`godot/island_arena` 是 `scenes/island_arena` 的实时运行时：静态岛屿来自 GLB，海面、天空、反射、天气、风力植被和灯光全部由本项目在运行时生成。它和 `godot/cel_forest_arena` 同属 `godot/` 下的一个 Godot 工程，共用 `godot/common/` 里的相机、HUD 与截图逻辑。
 
 - 引擎：**Godot 4.7.2**，Forward+，Vulkan（实测 GTX 1050 Ti）
 - 分辨率：1600 × 900，MSAA 2×
-- 场景：`main.tscn`，入口脚本 `scripts/main.gd`
-- 资产：`assets/island_arena.glb`（与 `output/island_arena/island_arena.glb` 完全一致）
+- 场景：`island_arena/main.tscn`，入口脚本 `island_arena/scripts/main.gd`
+- 资产：`island_arena/assets/island_arena.glb`（与 `output/island_arena/island_arena.glb` 完全一致）
 
 ## 运行
 
 ```bash
-# 编辑器
-"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/island_arena
+# 编辑器（打开合并工程，再选 island_arena/main.tscn）
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --editor --path godot
 
 # 直接运行
-"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/island_arena -- --mood=night
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" \
+  --path godot res://island_arena/main.tscn -- --mood=night
 ```
 
 ## 操作
@@ -34,7 +35,7 @@
 ## 命令行参数（截图 / 自动化）
 
 ```bash
-Godot_v4.7.2-stable_win64_console.exe --path godot/island_arena -- \
+Godot_v4.7.2-stable_win64_console.exe --path godot res://island_arena/main.tscn -- \
   --mood=storm --cam=hero --frames=160 \
   --shot=D:/game/scence/linzhongjijichang/renders/island_arena/godot_storm.png
 ```
@@ -52,32 +53,35 @@ Godot_v4.7.2-stable_win64_console.exe --path godot/island_arena -- \
 
 ## 换 GLB 后必须重新导入
 
-Godot 使用 `.godot/imported/*.scn` 缓存。只替换 `assets/island_arena.glb` 而不重新导入，运行时会继续使用旧场景。
+Godot 使用 `.godot/imported/*.scn` 缓存。只替换 `island_arena/assets/island_arena.glb` 而不重新导入，运行时会继续使用旧场景。
 
 ```bash
 cp output/island_arena/island_arena.glb godot/island_arena/assets/island_arena.glb
 "D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64_console.exe" \
-  --headless --path godot/island_arena --import
+  --headless --path godot --import
 ```
 
-`assets/island_arena.glb.import` 已设 `gltf/embedded_image_handling=3`（贴图内嵌进导入场景），因此 `assets/` 下不会再生成 24 张 sidecar PNG；整个工程只需要 GLB + `water_normal.png` + `foam.png`。
+`island_arena/assets/island_arena.glb.import` 已设 `gltf/embedded_image_handling=3`（贴图内嵌进导入场景），因此 `assets/` 下不会再生成 24 张 sidecar PNG；整个工程只需要 GLB + `water_normal.png` + `foam.png`。
 
 ## 结构
 
 ```
-main.tscn                  Node3D + Camera3D（挂 orbit_camera.gd）
-scripts/scene_profile.gd   场景配置：GLB 路径、节点名、材质键、相机预设、岸线参数、HUD
-scripts/main.gd            环境、GLB 加载、海面、平面反射、雨、UI、天气插值
-scripts/weather.gd         三套天气参数表 + 时间流逝
-scripts/orbit_camera.gd    平滑环绕相机，FOV 38°
-shaders/sky.gdshader       程序化天空：渐变、太阳、月亮、云、星空、闪电
-shaders/ocean.gdshader     波形、浅深水、反射、泡沫、太阳高光、远海雾
-shaders/terrain.gdshader   按世界高度/坡度/噪声混合湿沙、沙、草、岩石
-shaders/wind.gdshader      叶片 UV.y 加权摆动 + 高频颤动
-shaders/vignette.gdshader  暗角
+godot/project.godot                    共用工程：Forward+、1600×900、MSAA 2×、4096 阴影
+godot/common/scripts/orbit_camera.gd   两场景共用的平滑环绕相机
+godot/common/scripts/hud.gd            共用 HUD：标题、副标题、底部提示
+godot/common/scripts/capture.gd        共用命令行解析与截图
+godot/island_arena/main.tscn           Node3D + Camera3D
+godot/island_arena/scripts/scene_profile.gd  场景配置：GLB、节点名、相机、岸线、HUD
+godot/island_arena/scripts/main.gd     环境、GLB 加载、海面、平面反射、雨、UI、天气插值
+godot/island_arena/scripts/weather.gd  三套天气参数表 + 时间流逝
+godot/island_arena/shaders/sky.gdshader      程序化天空：渐变、太阳、月亮、云、星空、闪电
+godot/island_arena/shaders/ocean.gdshader    波形、浅深水、反射、泡沫、太阳高光、远海雾
+godot/island_arena/shaders/terrain.gdshader  按世界高度/坡度/噪声混合湿沙、沙、草、岩石
+godot/island_arena/shaders/wind.gdshader     叶片 UV.y 加权摆动 + 高频颤动
+godot/island_arena/shaders/vignette.gdshader 暗角
 ```
 
-`scene_profile.gd` 只放场景数据、不放逻辑。复制整个工程做新竞技场时，替换 `assets/` 下的 GLB、改这个文件里的 `GLB_PATH` / `NODES` / `CAMERA_PRESETS` / `SHORE` / `HUD`，再按新场景改 `weather.gd` 的配色即可。运行时本身的逻辑（海面、反射、天气插值、雨）不需要动；`shaders/ocean.gdshader` 里的 `terrain_h()` 仍是海岛地形的解析近似，换地形轮廓时需同步调整。
+`scene_profile.gd` 只放场景数据、不放逻辑。新增竞技场时复制 `godot/island_arena/` 成 `godot/<name>/`，替换 `assets/` 下的 GLB，改这个文件里的 `GLB_PATH` / `NODES` / `CAMERA` / `CAMERA_PRESETS` / `SHORE` / `HUD`，再按新场景改 `weather.gd` 的配色即可。相机、HUD、命令行与截图已抽到 `godot/common/`，不需要复制；运行时本身的逻辑（海面、反射、天气插值、雨）也不需要动。`shaders/ocean.gdshader` 里的 `terrain_h()` 仍是海岛地形的解析近似，换地形轮廓时需同步调整。
 
 ### 运行时构建内容
 
@@ -110,5 +114,5 @@ shaders/vignette.gdshader  暗角
 ## 已知限制
 
 - 反射是平面镜像，只对海平面成立；水下物体和折射不参与。
-- Godot 的 `.godot/` 缓存不入库，首次打开需要重新导入（约 10–20 秒）。
+- Godot 的 `.godot/` 缓存不入库，首次打开共享工程需要导入两个场景的 GLB（约 30–40 秒）。
 - 场景依赖 `scenes/island_arena/layout.py` 的岸线函数；改动岛屿轮廓后，需要同步 `ocean.gdshader` 里的 `shore_radius`。

@@ -2,7 +2,7 @@
 
 主文件：`island_arena.glb`（23.9 MiB / 25.0 MB，贴图内嵌，单文件自包含）
 源文件：`../../checkpoints/island_arena/island_arena.blend`（Blender 5.2）
-实时工程：`../../godot/island_arena`（Godot 4.7.2，Forward+）
+实时场景：`../../godot/island_arena`（共用 Godot 工程 `../../godot/`，Godot 4.7.2，Forward+）
 预览图：`../../renders/island_arena/hero.png`（Blender）、`godot_sunny.png`、`godot_sunny_shore.png`、`godot_storm.png`、`godot_night.png`（Godot 实机）
 
 重新生成：
@@ -16,10 +16,11 @@ blender -b -P build.py -- --scene island_arena --phase render --render hero --sa
 
 ## 1. 交付方式：直接运行实时工程
 
-本场景的波浪、反射、天空、雨、风和天气切换**不在 GLB 里**，由 `godot/island_arena` 在运行时生成。推荐直接打开该工程：
+本场景的波浪、反射、天空、雨、风和天气切换**不在 GLB 里**，由 `godot/island_arena` 在运行时生成。推荐直接打开该场景：
 
 ```bash
-"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/island_arena
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" \
+  --path godot res://island_arena/main.tscn
 ```
 
 需要单独把 GLB 导入自己的工程时，按第 2 节操作；此时只得到静态岛屿（地形、看台、灯塔、棕榈、道具、灯光），海面与天空需要自行实现。
@@ -31,7 +32,7 @@ blender -b -P build.py -- --scene island_arena --phase render --render hero --sa
 1. 使用 Godot 4.7.x，渲染器选 **Forward+**（Vulkan）。
 2. 把 `island_arena.glb` 复制进工程，等待首次导入（约 10–20 秒）。
 3. 在 Import 面板把 **glTF → Embedded Image Handling** 设为 **Embed as Uncompressed**（`embedded_image_handling=3`）。默认的 *Extract Textures* 会在 GLB 旁生成 24 张 sidecar PNG；两者都能用，内嵌方式更干净。
-4. 实例化 GLB 后，把 `CAM_Hero` 设为 `current`，或按 `godot/island_arena/scripts/orbit_camera.gd` 的预设重建相机（FOV 38°，目标 `(0, 4.5, -2)`，距离 62 m）。
+4. 实例化 GLB 后，把 `CAM_Hero` 设为 `current`，或按 `godot/common/scripts/orbit_camera.gd` 的预设重建相机（FOV 38°，目标 `(0, 4.5, -2)`，距离 62 m）。
 5. glTF 不带阴影开关，平行光需手动开阴影。
 6. **不要**启用 Draco / meshopt；本 GLB 使用原始网格。
 

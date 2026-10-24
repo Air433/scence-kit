@@ -1,18 +1,31 @@
 extends RefCounted
 
 # Scene-level data for the real-time runtime. Keep this file free of logic:
-# copying godot/island_arena to another arena should mostly mean replacing the
-# GLB, this table and scripts/weather.gd.
+# adding another arena to the shared godot/ project should mostly mean copying
+# island_arena, then replacing the GLB, this table and scripts/weather.gd.
 
-const WEATHER := preload("res://scripts/weather.gd")
+const WEATHER := preload("res://island_arena/scripts/weather.gd")
 
-const GLB_PATH := "res://assets/island_arena.glb"
+const GLB_PATH := "res://island_arena/assets/island_arena.glb"
 const DEFAULT_MOOD := "sunny"
 const DEFAULT_CAM := "hero"
+const DEFAULT_FRAMES := 100
 const BLEND_SPEED := 0.24
 const AUTO_WEATHER_START := 82.0
 const AUTO_WEATHER_MIN := 62.0
 const AUTO_WEATHER_MAX := 96.0
+
+const CAMERA := {
+    "fov": 38.0,
+    "near": 0.2,
+    "far": 30000.0,
+    "pitch_min": -4.0,
+    "pitch_max": 34.0,
+    "min_distance": 16.0,
+    "max_distance": 130.0,
+    "auto_orbit_delay": 5.0,
+    "auto_orbit_speed": 0.45,
+}
 
 const NODES := {
     "camera": "CAM_Hero",
@@ -114,4 +127,8 @@ const HUD := {
     "weather_placeholder": "晴天",
     "hint": "拖动旋转 · 滚轮缩放 ·  1 晴天   2 暴雨   3 夜晚   R 随机天气   C 自动环绕",
     "shot_name": "island_arena_shot.png",
+    "title_color": Color(1.0, 0.96, 0.90),
+    "subtitle_color": Color(1.0, 0.88, 0.72, 0.85),
+    "hint_color": Color(1.0, 0.95, 0.88, 0.72),
+    "outline_color": Color(0.03, 0.03, 0.04, 0.7),
 }
