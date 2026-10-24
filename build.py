@@ -84,6 +84,18 @@ def scene_builder(scene_name):
     return None
 
 
+def post_export_hook(scene_name):
+    """Optional ``post_export.process(glb_path)`` for format-specific passes.
+
+    Used by cel_forest_arena to inject the VRMC_materials_mtoon extension,
+    which Blender cannot write itself.
+    """
+    mod = scene.optional_module(scene_name, "post_export")
+    if mod is not None and hasattr(mod, "process"):
+        return mod.process
+    return None
+
+
 def load_checkpoint():
     path = checkpoint_path()
     if not path.exists():
@@ -252,6 +264,11 @@ def main():
             export.save_blend()
         if full or args.phase == "export" or args.export:
             glb = export.export_glb()
+            hook = post_export_hook(args.scene)
+            if hook is not None:
+                print(f"[scene] post-export: scenes/{args.scene}/post_export.py",
+                      flush=True)
+                hook(glb)
             export.validate_glb(glb)
 
     if args.render in ("quick", "both"):

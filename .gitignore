@@ -9,6 +9,9 @@
 !/output/star_arena/
 /output/star_arena/*
 !/output/star_arena/README_Godot.md
+!/output/cel_forest_arena/
+/output/cel_forest_arena/*
+!/output/cel_forest_arena/README_Godot.md
 /checkpoints/
 /textures/
 /renders/*
@@ -24,6 +27,10 @@
 !/renders/star_arena/
 /renders/star_arena/*
 !/renders/star_arena/hero.png
+!/renders/cel_forest_arena/
+/renders/cel_forest_arena/*
+!/renders/cel_forest_arena/hero.png
+!/renders/cel_forest_arena/godot_hero.png
 
 # Godot import cache (regenerated on first open)
 /godot/*/.godot/

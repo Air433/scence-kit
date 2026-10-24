@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/orbit_camera.gd" id="2_camera"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="Camera" type="Camera3D" parent="."]
+current = true
+script = ExtResource("2_camera")

@@ -67,6 +67,27 @@ Blender 5.2 → GLB → Godot 的竞技场场景工具。共用引擎在 `arena_
 | 生成物 | `output/elven_arena/` |
 | Godot 导入与推荐 WorldEnvironment | `output/elven_arena/README_Godot.md` |
 
+## 赛璐璐森林竞技场 · 静态 + Godot 实时
+
+精灵森林竞技场的赛璐璐版本：同一套布局与机位，改用调色板重映射贴图、量化明暗、Posterize 天空与反壳墨线，导出时再向 GLB 注入 **VRMC_materials_mtoon 1.0** 扩展。`godot/cel_forest_arena` 用自定义着色器在实机上复现同一套 MToon 参数（二段式明暗、边缘光、逐材质描边宽度），并重建分色天空、体积雾与灯光。
+
+![赛璐璐森林竞技场主视觉](renders/cel_forest_arena/hero.png)
+
+*Blender Cycles 离线渲染；墨线与天空条带来自 Blender 合成器，GLB 内的 MToon 扩展由 `post_export.py` 注入。*
+
+| 部分 | 位置 |
+|---|---|
+| Blender 场景源码 | `scenes/cel_forest_arena/` |
+| MToon 扩展注入 | `scenes/cel_forest_arena/post_export.py` |
+| 生成物与导入说明 | `output/cel_forest_arena/README_Godot.md` |
+| Godot 4.7 实时工程 | [godot/cel_forest_arena/README.md](godot/cel_forest_arena/README.md) |
+
+Godot 实机（1600×900，`--cam=hero`）：
+
+![赛璐璐森林竞技场 Godot 实机](renders/cel_forest_arena/godot_hero.png)
+
+*MToon 着色器 + `next_pass` 反壳描边 + 程序化分色天空；与 Blender 版共享 GLB 几何与贴图。*
+
 ## 快速开始
 
 ```bash
@@ -85,8 +106,14 @@ blender -b -P build.py -- --scene star_arena --phase all --render mid
 # 构建天空竞技场
 blender -b -P build.py -- --scene sky_arena --phase all --render mid
 
+# 构建赛璐璐森林竞技场（导出时自动注入 MToon 扩展）
+blender -b -P build.py -- --scene cel_forest_arena --phase all --render mid
+
 # 运行海岛的 Godot 实时工程
 "D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/island_arena
+
+# 运行赛璐璐森林的 Godot 实时工程
+"D:/software/Godot_v4.7.2/Godot_v4.7.2-stable_win64.exe" --path godot/cel_forest_arena
 ```
 
 - 新建场景：复制 `scenes/_template` → 改 `scene.py` → 构建
